@@ -7,9 +7,9 @@ GPIO.setwarnings(False)
 GPIO.setup(4, GPIO.IN)  # Physical pin n as an input  physical pin : 7
 GPIO.setup(17, GPIO.IN) # set a port/pin as an input physical pin :11
 
-stateA = stateB = position = 0
+stateA = stateB = 0
 
-while True:
+def read(position):
     
     ######### READ PIN STATE #########
     stateA = GPIO.input(4) # read status of pin/port and assign to variable i
@@ -34,4 +34,5 @@ while True:
     else: #HIGH to LOW transition on B
         if(not stateA): position += 1 # going clockwise: increment
         else: position -= 1 # going counterclockwise: decrement
+    return position
     
