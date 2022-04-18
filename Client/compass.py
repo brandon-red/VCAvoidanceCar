@@ -11,9 +11,9 @@ GPIO.setwarnings(False)
 
 
 def read():
-    #
-    #GPIO.setup(, GPIO.IN)  # Physical pin n as an input
-    #GPIO.setup(17, GPIO.IN) # set a port/pin as an input
+    
+    GPIO.setup(, GPIO.IN)  # Physical pin n as an input
+    GPIO.setup(17, GPIO.IN) # set a port/pin as an input
 
     return
 
