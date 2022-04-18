@@ -1,4 +1,4 @@
-from socket import *
+import socket
 import argparse
 import json
 
@@ -11,18 +11,17 @@ args = parser.parse_args()
 port = args.port # get the ip and port of the server
 
 try:
-        
-    sock = socket()
+    sock = socket.socket()
     sock.bind(('', port))
+    sock.listen(10) 
     print("="*30)
     print("Sever listening on", port)
     print("="*30)
 
-
     while True:
         connection, address = sock.accept()
-        print("Message from", connection)
-        packet_json = connection.recv().decode()
+        print("Message from", address)
+        packet_json = connection.recv(1024).decode()
         packet = json.loads(packet_json)
         # packet is a json with entries from 4 different sensors
         encoder = packet['encoder']
@@ -35,6 +34,10 @@ try:
         print("Infrared sensor detected:", infrared)
         print("Position of car:", encoder)
         print("Current direction of the car:", compass)
+
+        msg = "acked"
+        connection.send(msg.encode())                              
+
 except ConnectionRefusedError:
     print("Connection refused. Server program not running.")
 finally:
