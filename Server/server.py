@@ -30,8 +30,10 @@ try:
         range = packet['ranger']
 
         print("New sensor update received")
-        print("Ranger measurement:", range)
-        print("Infrared sensor detected:", infrared)
+        print("Front Ranger measurement:", range[0])
+        print("Back Ranger measurement:", range[1])
+        print("Infrared sensor detected:", infrared[0])
+        print("Infrared sensor detected:", infrared[1])
         print("Position of car:", encoder)
         print("Current direction of the car:", compass)
 
