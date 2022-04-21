@@ -16,32 +16,109 @@ python3 Client.py -p 1234                       # connect server at 127.0.0.1 po
 
 import socket
 import json
+import time
+from Client.SensorReading.compass import Compass
+from Client.SensorReading.encoder import Encoder
+from Client.SensorReading.infrared import Infrared
+from Client.SensorReading.ranger import Ranger
+import RPi.GPIO as GPIO
 
-import encoder
-import compass
-import infrared
-import ranger
+"""
+- initialize list of commands
+- will be appended to after receiving command from Google API
+- will pop as commands are executed
+"""
+command_queue = []
 
+valid_commands = {"go forward", "go backward", "turn left", 
+    "turn right", "go to A", "go to B", "go to C"}
+
+# Front Ranger Pin Setup
+TRIG1 = 4 
+ECHO1 = 17
+
+# Back Ranger Pin Setup
+TRIG2 = 2
+ECHO2 = 23
+
+# Compass Setup
+
+""" Unsure what sensor to use """ 
+
+# IR Setup
+
+IR_DATA1 = 5
+
+IR_DATA2 = 6
+
+# Encoder Setup
+"""
+Might not use
+"""
+CLK = 23
+DT = 24
+
+GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)
+GPIO.cleanup()
+
+rangerF = Ranger(TRIG1, ECHO1)
+rangerF.setup()
+
+rangerB = Ranger(TRIG2, ECHO2)
+rangerB.setup()
+
+encoder_obj = Encoder(CLK, DT)
+encoder_obj.setup()
+
+infraredF = Infrared(IR_DATA1)
+infraredF.setup()
+
+infraredB = Infrared(IR_DATA2)
+infraredB.setup()
+
+compass_obj = Compass()
+compass_obj.setup()
 
 port = 44444
 port = "127.0.0.1"
 
+def get_command():
+    """
+    handles the commands received from Google API
+    """
+    f = open("data/requests.json", "rw")
+    requests = json.loads(f)
+    if requests["Valid"] == "True":
+        command_queue.append(requests["words"])
+        requests["Valid"] = "False"
+        updated = json.dumps(requests)
+        f.write(updated)
+    else:
+        return "No new command"
+
+
 def send_packet(port, ip):
+    """
+    called every ~20ms
+    """
     try:
         print("Trying to connect to %s:%d" % (ip, port))
         sock = socket.socket()
         sock.connect((ip, port))
 
-        range = ranger.read()
-        position = encoder.read(0)
-        proximity = infrared.read()
-        direction = compass.read()
+        front_range = rangerF.measureDistance()
+        back_range = rangerB.measureDistance()
+        position = encoder_obj.getPosition(0)
+        front_proximity = infraredF.measureDistance()
+        back_proximity = infraredB.measureDistance()
+        direction = compass_obj.getPosition()
 
         packet = {
             'encoder': position,
-            'IR': proximity,
+            'IR': [front_proximity, back_proximity],
             'compass': direction,
-            'ranger': range
+            'ranger': [front_range, back_range]
         }
 
         packet_json = json.dumps(packet)
