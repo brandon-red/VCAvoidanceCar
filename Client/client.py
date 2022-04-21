@@ -34,12 +34,12 @@ valid_commands = {"go forward", "go backward", "turn left",
     "turn right", "go to A", "go to B", "go to C"}
 
 # Front Ranger Pin Setup
-TRIG1 = 4 
-ECHO1 = 17
+TRIG1 = 16 
+ECHO1 = 11
 
 # Back Ranger Pin Setup
-TRIG2 = 2
-ECHO2 = 23
+TRIG2 = 18
+ECHO2 = 13
 
 # Compass Setup
 
@@ -47,9 +47,9 @@ ECHO2 = 23
 
 # IR Setup
 
-IR_DATA1 = 5
+IR_DATA1 = 15
 
-IR_DATA2 = 6
+IR_DATA2 = 22
 
 # Encoder Setup
 """
