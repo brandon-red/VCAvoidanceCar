@@ -14,6 +14,7 @@ class Infrared:
 
     def setup(self):
         GPIO.setup(self.DATA_pin, GPIO.IN)
+        GPIO.setmode(GPIO.BCM)
         self.isInit = True
 
     def measureDistance(self):

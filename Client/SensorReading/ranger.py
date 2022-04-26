@@ -17,7 +17,7 @@ class Ranger:
     def setup(self):
         GPIO.setup(self.TRIG_pin, GPIO.OUT)
         GPIO.setup(self.ECHO_pin, GPIO.IN)
-    
+        GPIO.setmode(GPIO.BCM)
         GPIO.output(self.TRIG_pin, False)
         time.sleep(0.080) 
         print("sensor is ready")

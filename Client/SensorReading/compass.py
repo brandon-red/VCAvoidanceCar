@@ -12,6 +12,7 @@ class Compass:
         pass
     
     def setup():
+        GPIO.setmode(GPIO.BCM)
         pass
 
     def getPosition():
