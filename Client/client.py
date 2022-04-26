@@ -112,10 +112,10 @@ if __name__ == "__main__":
     encoder_obj = Encoder(CLK, DT)
     encoder_obj.setup()
 
-    infraredF = Infrared(IR_DATA1)
+    infraredF = Infrared(IR_FRONT)
     infraredF.setup()
 
-    infraredB = Infrared(IR_DATA2)
+    infraredB = Infrared(IR_BACK)
     infraredB.setup()
 
     compass_obj = Compass()
