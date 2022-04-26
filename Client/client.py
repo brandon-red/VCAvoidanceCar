@@ -1,5 +1,3 @@
-
-
 import socket
 import json
 import time
@@ -95,7 +93,7 @@ def send_packet(port, ip):
 
         ack = sock.recv(1024).decode()
         print("Server ACKed packet")
-        if(ack is not "acked"): print("Server dropped packet")
+        if(ack != "acked"): print("Server dropped packet")
 
     except ConnectionRefusedError:
         print("Connection refused. Server program not running.")
