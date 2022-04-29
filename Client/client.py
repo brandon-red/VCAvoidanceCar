@@ -83,15 +83,16 @@ def send_packet(port, ip):
 
         front_range = rangerF.measureDistance()
         back_range = rangerB.measureDistance()
+        right_range = rangerR.measureDistance()
+        left_range = rangerL.measureDistance()
         front_proximity = infraredF.measureDistance()
         back_proximity = infraredB.measureDistance()
         direction = compass_obj.getPosition()
 
         packet = {
-            'encoder': position,
             'IR': [front_proximity, back_proximity],
             'compass': direction,
-            'ranger': [front_range, back_range]
+            'ranger': [front_range, back_range, right_range, left_range]
         }
 
         packet_json = json.dumps(packet)
