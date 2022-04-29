@@ -23,16 +23,22 @@ class Motor:
         self.isInit = True
     
     def forward(self):
+        if not self.isInit:
+            self.setup()
         GPIO.output(self.IN1, HIGH)
         GPIO.output(self.IN2, LOW)
         print("forward")
     
     def backward(self):
+        if not self.isInit:
+            self.setup()
         GPIO.output(self.IN1, LOW)
         GPIO.output(self.IN2, HIGH)
         print("backward")
     
     def stop(self):
+        if not self.isInit:
+            self.setup()
         GPIO.output(self.IN1, LOW)
         GPIO.output(self.IN2, LOW)
         print("stop")
