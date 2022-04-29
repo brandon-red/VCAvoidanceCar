@@ -18,8 +18,12 @@ class Infrared:
         self.isInit = True
 
     def measureDistance(self):
+        """
+        return 1 if doesn't see ground
+        return 0 for normal operation
+        """
         if self.isInit == False:
             self.setup()
+        distance = GPIO.input(self.DATA_pin)
 
-        # decide what measurement should signal an alert
-        return
+        return distance
