@@ -19,7 +19,7 @@ class Motor:
         GPIO.output(self.IN1, LOW)
         GPIO.output(self.IN2, LOW)
         pwm = GPIO.PWM(self.EN, 100)
-        pwm.start(25)
+        pwm.start(100)
         self.isInit = True
     
     def forward(self):
