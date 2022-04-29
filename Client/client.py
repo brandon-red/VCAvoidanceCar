@@ -1,8 +1,8 @@
 import socket
 import json
 import time
+from MotorControl.motor_controller import Motor
 from SensorReading.compass import Compass
-from SensorReading.encoder import Encoder
 from SensorReading.infrared import Infrared
 from SensorReading.ranger import Ranger
 import RPi.GPIO as GPIO
@@ -130,3 +130,43 @@ if __name__ == "__main__":
 
     compass_obj = Compass()
     compass_obj.setup()
+
+    right = Motor(IN1, IN2, ENA)
+    left =  Motor(IN3, IN4, ENB)
+    
+    while True:
+        x = input()
+        
+        if x == 'f':
+            print("right motor")
+            right.forward()
+            print("left motor")
+            left.forward()
+        
+        elif x == 'b':
+            print("right motor")
+            right.backward()
+            print("left motor")
+            left.backward()
+
+        elif x == 's':
+            print("right motor")
+            right.stop()
+            print("left motor")
+            left.stop()
+
+        elif x == 'r':
+            print("right motor")
+            right.backward()
+            print("left motor")
+            left.forward()
+        
+        elif x == 'l':
+            print("right motor")
+            right.forward()
+            print("left motor")
+            left.backward()
+        elif x=='e':
+            GPIO.cleanup()
+            break
+        
