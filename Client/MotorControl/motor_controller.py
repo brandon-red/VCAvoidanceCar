@@ -1,4 +1,3 @@
-from Client.client import IN1, IN2
 import RPi.GPIO as GPIO 
 import time
 
