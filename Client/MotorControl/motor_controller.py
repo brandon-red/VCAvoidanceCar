@@ -1,3 +1,4 @@
+from Client.client import IN1, IN2
 import RPi.GPIO as GPIO 
 import time
 
@@ -18,8 +19,25 @@ class Motor:
         GPIO.setmode(GPIO.BCM)
         GPIO.output(self.IN1, LOW)
         GPIO.output(self.IN2, LOW)
-        p = GPIO.PWM(self.EN, 1000)
-        p.start(25)
+        pwm = GPIO.PWM(self.EN, 1000)
+        pwm.start(25)
+        self.isInit = True
+    
+    def forward(self):
+        GPIO.output(IN1, HIGH)
+        GPIO.output(IN2, LOW)
+        print("forward")
+    
+    def backward(self):
+        GPIO.output(IN1, LOW)
+        GPIO.output(IN2, HIGH)
+        print("backward")
+    
+    def stop(self):
+        GPIO.output(IN1, LOW)
+        GPIO.output(IN2, LOW)
+        print("stop")
+        
         
 
 
