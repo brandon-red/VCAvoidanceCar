@@ -23,18 +23,18 @@ class Motor:
         self.isInit = True
     
     def forward(self):
-        GPIO.output(IN1, HIGH)
-        GPIO.output(IN2, LOW)
+        GPIO.output(self.IN1, HIGH)
+        GPIO.output(self.IN2, LOW)
         print("forward")
     
     def backward(self):
-        GPIO.output(IN1, LOW)
-        GPIO.output(IN2, HIGH)
+        GPIO.output(self.IN1, LOW)
+        GPIO.output(self.IN2, HIGH)
         print("backward")
     
     def stop(self):
-        GPIO.output(IN1, LOW)
-        GPIO.output(IN2, LOW)
+        GPIO.output(self.IN1, LOW)
+        GPIO.output(self.IN2, LOW)
         print("stop")
         
         
