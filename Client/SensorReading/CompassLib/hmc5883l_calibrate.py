@@ -28,7 +28,7 @@ from time import sleep
 
 i2c_HMC5883l = HMC5883(gauss=4)
 # Set declination according to your position
-i2c_HMC5883l.set_declination(0, 0)
+i2c_HMC5883l.set_declination(-13, 67)
 
 Xmin=1000
 Xmax=-1000
