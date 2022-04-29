@@ -32,14 +32,23 @@ ECHO3 = 7
 # Left Ranger Pin Setup
 TRIG4 = 6
 ECHO4 = 8
-# Compass Setup
-
-""" Unsure what sensor to use """ 
 
 # IR Setup
 
 IR_FRONT = 15
 IR_BACK = 25
+
+# Motor 1 Setup
+
+IN1 = 16
+IN2 = 20
+ENA = 12
+
+# Motor 2 Setup
+
+IN3 = 10
+IN4 = 9
+ENB = 13
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
@@ -74,7 +83,6 @@ def send_packet(port, ip):
 
         front_range = rangerF.measureDistance()
         back_range = rangerB.measureDistance()
-        position = encoder_obj.getPosition(0)
         front_proximity = infraredF.measureDistance()
         back_proximity = infraredB.measureDistance()
         direction = compass_obj.getPosition()
