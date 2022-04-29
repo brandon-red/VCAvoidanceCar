@@ -32,9 +32,9 @@ from i2c_core import i2c_core
 class HMC5883(object):
     # Correction to be set after calibration
     xs=1
-    ys=1
-    xb=0
-    yb=0
+    ys=0.7953020134228188
+    xb=21.564999999999998
+    yb=38.59000000000003
 
     # Define registers values from datasheet
     ConfigurationRegisterA = 0x00
@@ -93,7 +93,7 @@ class HMC5883(object):
         self.scale_reg = self.scale_reg << 5
         self.set_option(self.ConfigurationRegisterB, self.scale_reg)
         if debug == True:
-        	print("HMC5883L set : gauss "+gauss+", scale "+scale)
+            print("HMC5883L set : gauss "+gauss+", scale "+scale)
 
     def set_option(self, register, *function_set):
         options = 0x00
