@@ -25,6 +25,13 @@ ECHO1 = 17
 TRIG2 = 24
 ECHO2 = 27
 
+# Right Ranger Pin Setup
+TRIG3 = 5
+ECHO3 = 7
+
+# Left Ranger Pin Setup
+TRIG4 = 6
+ECHO4 = 8
 # Compass Setup
 
 """ Unsure what sensor to use """ 
@@ -34,18 +41,9 @@ ECHO2 = 27
 IR_FRONT = 15
 IR_BACK = 25
 
-# Encoder Setup
-"""
-Might not use
-"""
-CLK = 23
-DT = 24
-
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 GPIO.cleanup()
-
-
 
 port = 44444
 port = "127.0.0.1"
@@ -109,8 +107,11 @@ if __name__ == "__main__":
     rangerB = Ranger(TRIG2, ECHO2)
     rangerB.setup()
 
-    encoder_obj = Encoder(CLK, DT)
-    encoder_obj.setup()
+    rangerR = Ranger(TRIG3, ECHO3)
+    rangerR.setup()
+    
+    rangerL = Ranger(TRIG4, ECHO4)
+    rangerL.setup()
 
     infraredF = Infrared(IR_FRONT)
     infraredF.setup()
