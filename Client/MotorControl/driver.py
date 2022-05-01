@@ -16,7 +16,7 @@ class Driver:
     
     def getMovement(self):
         """
-        gets what setting the car is in 
+        gets what movement the vehicle is doing 
         """
         if self.is_forward:
             return 'forward'
@@ -52,7 +52,7 @@ class Driver:
         """
         sets right side to go backward 
         sets left side to go forward
-        turns the car right 
+        turns the vehicle right 
         """
         if not self.isInit:
             self.setup()
@@ -63,7 +63,7 @@ class Driver:
         """
         sets right side to go forward
         sets left side to go backward
-        sets 
+        turns the vehicle left
         """
         if not self.isInit:
             self.setup()
@@ -71,6 +71,11 @@ class Driver:
         self.left.backward()
 
     def stop(self):
+        """
+        sets right side to stop
+        sets left side to stop
+        stops the vehicle
+        """
         if not self.isInit:
             self.setup()
         self.right.stop()

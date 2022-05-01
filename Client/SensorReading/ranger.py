@@ -26,7 +26,7 @@ class Ranger:
     def getInit(self):
         return self.isInit
 
-    def measureDistance(self):
+    def getDist(self):
         if not self.isInit:
             self.setup()
 
@@ -61,8 +61,8 @@ class Ranger:
             self.setup()
         if not other.getInit():
             other.setup()
-        dist1 = self.measureDistance()
-        dist2 = other.measureDistance()
+        dist1 = self.getDist()
+        dist2 = other.getDist()
 
         return dist1 > dist2
         
