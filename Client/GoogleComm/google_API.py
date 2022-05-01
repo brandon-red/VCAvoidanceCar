@@ -2,9 +2,6 @@ from flask import Flask, request, jsonify
 import RPi.GPIO as GPIO
 import json
 
-GPIO.setmode(GPIO.BCM)
-GPIO.setwarnings(False)
-
 app = Flask(__name__)
 
 
