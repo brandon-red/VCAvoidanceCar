@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 import RPi.GPIO as GPIO
-import json
+import json, os
 
 app = Flask(__name__)
 
@@ -8,8 +8,10 @@ app = Flask(__name__)
 @app.route('/prime', methods=['POST'])
 def prime():
     content = request.get_json() #JSON
-    content['valid'] = True
-    f = open("request.txt", 'w')
+    dir = "/home/pi/VCAvoidanceCar/Client/data"
+    name = "request.json"
+    path = os.path.join(dir, name)
+    f = open(path, 'w')
     f.write(json.dumps(content))
     f.close()
 
