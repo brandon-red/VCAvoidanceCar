@@ -1,10 +1,11 @@
 import socket
 import json
 import time
-from MotorControl.motor_controller import Motor
-from SensorReading.compass import Compass
+from SensorReading.CompassLib import Compass
 from SensorReading.infrared import Infrared
 from SensorReading.ranger import Ranger
+from MotorControl.motor_controller import Motor
+from MotorControl.driver import Driver
 import RPi.GPIO as GPIO
 
 """
@@ -42,13 +43,11 @@ IR_BACK = 25
 
 IN1 = 16
 IN2 = 20
-ENA = 12
 
 # Motor 2 Setup
 
 IN3 = 10
 IN4 = 9
-ENB = 13
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
@@ -71,7 +70,6 @@ def get_command():
     else:
         return "No new command"
 
-
 def send_packet(port, ip):
     """
     called every ~20ms
@@ -85,8 +83,8 @@ def send_packet(port, ip):
         back_range = rangerB.measureDistance()
         right_range = rangerR.measureDistance()
         left_range = rangerL.measureDistance()
-        front_proximity = infraredF.measureDistance()
-        back_proximity = infraredB.measureDistance()
+        front_proximity = infraredF.getProximity()
+        back_proximity = infraredB.getProximity()
         direction = compass_obj.getPosition()
 
         packet = {
@@ -128,45 +126,57 @@ if __name__ == "__main__":
     infraredB = Infrared(IR_BACK)
     infraredB.setup()
 
-    compass_obj = Compass()
-    compass_obj.setup()
+    compassObj = Compass()
+    compassObj.setup()
 
-    right = Motor(IN1, IN2, ENA)
-    left =  Motor(IN3, IN4, ENB)
-    
+    rightMotor = Motor(IN2, IN1)
+    rightMotor.setup()
+
+    leftMotor = Motor(IN3, IN4)
+    leftMotor.setup()  
+
+    driver = Driver(rightMotor, leftMotor)
+    driver.setup()
+
+    # Main Loop
     while True:
-        x = input()
-        
-        if x == 'f':
-            print("right motor")
-            right.forward()
-            print("left motor")
-            left.forward()
-        
-        elif x == 'b':
-            print("right motor")
-            right.backward()
-            print("left motor")
-            left.backward()
+        # Obstacle Avoidance
+        if (driver.getMovement() == 'forward' and rangerF.measureDistance() < 20) or (driver.getMovement() == 'backward' and rangerB.measureDistance() < 20):
+            originalDir = driver.getMovement()
+            driver.stop()
+            turnDir = rangerL.isMax(rangerR)
+            originalTurn = 'right'
+            if turnDir:
+                driver.turnLeft()
+                originalTurn = 'left'
+            else:
+                driver.turnRight()
 
-        elif x == 's':
-            print("right motor")
-            right.stop()
-            print("left motor")
-            left.stop()
+            # Looking at wrong sensor: obstacleVisible is changed by one of the side rangers
+            # Look to make this simpler
+            driveDir = rangerF.isMax(rangerB)
+            if driveDir:
+                obstacleVisible = True
+                while obstacleVisible:
+                    if rangerF.measureDistance() > 30:
+                        driver.forward()
+                    else:
+                        obstacleVisible = False
+            else:
+                obstacleVisible = True
+                while obstacleVisible:
+                    if rangerB.measureDistance() > 30:
+                        driver.backward()
+                    else:
+                        obstacleVisible = False
+            if originalTurn == 'right':
+                driver.turnLeft()
+            else:
+                driver.turnRight()
 
-        elif x == 'r':
-            print("right motor")
-            right.backward()
-            print("left motor")
-            left.forward()
-        
-        elif x == 'l':
-            print("right motor")
-            right.forward()
-            print("left motor")
-            left.backward()
-        elif x=='e':
-            GPIO.cleanup()
-            break
-        
+            if originalDir == 'forward':
+                driver.forward()
+            else:
+                driver.backward()
+            
+

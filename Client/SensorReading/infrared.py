@@ -1,7 +1,6 @@
 ######################################################################################
                 # Raspberry Pi source code for sensing infrared #
-# Should be structured as a function that can be called from main and other processes #
-                # Look at encoder.py as a template example #
+# Structured as a function that can be called from main and other processes #
 ######################################################################################
 
 import RPi.GPIO as GPIO
@@ -19,13 +18,12 @@ class Infrared:
         print('sensor is ready')
         self.isInit = True
 
-    def measureDistance(self):
+    def getProximity(self):
         """
         return 1 if doesn't see ground
         return 0 for normal operation
         """
         if self.isInit == False:
             self.setup()
-        distance = GPIO.input(self.DATA_pin)
-
-        return distance
+        proximity = GPIO.input(self.DATA_pin)
+        return proximity

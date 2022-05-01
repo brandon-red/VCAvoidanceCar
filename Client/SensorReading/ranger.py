@@ -22,9 +22,12 @@ class Ranger:
         time.sleep(0.080) 
         print("sensor is ready")
         self.isInit = True
+    
+    def getInit(self):
+        return self.isInit
 
     def measureDistance(self):
-        if self.isInit == False:
+        if not self.isInit:
             self.setup()
 
         # send a 10usec gate signal to Trig
@@ -45,5 +48,21 @@ class Ranger:
         pulse_travel_time = pulse_end - pulse_start
         distance = pulse_travel_time * self.SOUND_SPEED / 2 # in unit cm
         time.sleep(0.080)
-        return distance    
-         
+        return distance
+
+    def isMax(self, other):
+        """
+        returns True if the current ranger's distance measurement
+        is greater than the other ranger's, False otherwise
+
+        will be used in Obstacle Avoidance algorithm
+        """
+        if not self.isInit:
+            self.setup()
+        if not other.getInit():
+            other.setup()
+        dist1 = self.measureDistance()
+        dist2 = other.measureDistance()
+
+        return dist1 > dist2
+        
