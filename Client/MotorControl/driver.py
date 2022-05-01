@@ -49,13 +49,22 @@ class Driver:
         self.is_stopped = False
 
     def turnRight(self):
-        
+        """
+        sets right side to go backward 
+        sets left side to go forward
+        turns the car right 
+        """
         if not self.isInit:
             self.setup()
         self.right.backward()
         self.left.forward()    
     
     def turnLeft(self):
+        """
+        sets right side to go forward
+        sets left side to go backward
+        sets 
+        """
         if not self.isInit:
             self.setup()
         self.right.forward()

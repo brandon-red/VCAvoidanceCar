@@ -85,7 +85,7 @@ def send_packet(port, ip):
         left_range = rangerL.measureDistance()
         front_proximity = infraredF.getProximity()
         back_proximity = infraredB.getProximity()
-        direction = compass_obj.getPosition()
+        direction = compassObj.getPosition()
 
         packet = {
             'IR': [front_proximity, back_proximity],
@@ -139,44 +139,5 @@ if __name__ == "__main__":
     driver.setup()
 
     # Main Loop
-    while True:
-        # Obstacle Avoidance
-        if (driver.getMovement() == 'forward' and rangerF.measureDistance() < 20) or (driver.getMovement() == 'backward' and rangerB.measureDistance() < 20):
-            originalDir = driver.getMovement()
-            driver.stop()
-            turnDir = rangerL.isMax(rangerR)
-            originalTurn = 'right'
-            if turnDir:
-                driver.turnLeft()
-                originalTurn = 'left'
-            else:
-                driver.turnRight()
 
-            # Looking at wrong sensor: obstacleVisible is changed by one of the side rangers
-            # Look to make this simpler
-            driveDir = rangerF.isMax(rangerB)
-            if driveDir:
-                obstacleVisible = True
-                while obstacleVisible:
-                    if rangerF.measureDistance() > 30:
-                        driver.forward()
-                    else:
-                        obstacleVisible = False
-            else:
-                obstacleVisible = True
-                while obstacleVisible:
-                    if rangerB.measureDistance() > 30:
-                        driver.backward()
-                    else:
-                        obstacleVisible = False
-            if originalTurn == 'right':
-                driver.turnLeft()
-            else:
-                driver.turnRight()
-
-            if originalDir == 'forward':
-                driver.forward()
-            else:
-                driver.backward()
-            
 
