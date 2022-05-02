@@ -28,6 +28,10 @@ IN3 = 10 # GPIO pins for control of left motor
 IN4 = 9
 ADDRESS = "127.0.0.1" # Address and port number of UDP server
 PORT = 44444
+# START_HEADING = (180, 190,210)
+# A_HEADING = (X, X)
+# B_HEADING = (Y, Y)
+# C_HEADING = (Z, Z)
 #############################################
 
 
@@ -175,7 +179,6 @@ if __name__ == "__main__":
         if(len(command_queue) == 0): continue # no commands to execute
 
         cmd = command_queue.pop(0) # pop first command in the queue
-        ret = interpret_command(cmd) # Interpret what to do from the list of words
 
     # Call get_command() -> opens json file updated by google home and adds commands to the queue if a new request was made
     # Pop command from queue and interpret the command
