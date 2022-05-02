@@ -189,9 +189,9 @@ def system_init():
 
 if __name__ == "__main__":
 
-    fA = open("a_table.json")
-    fB = open("b_table.json")
-    fC = open("c_table.json")
+    fA = open("/home/pi/VCAvoidanceCar/Client/WifiTri/a_table.json")
+    fB = open("/home/pi/VCAvoidanceCar/Client/WifiTri/b_table.json")
+    fC = open("/home/pi/VCAvoidanceCar/Client/WifiTri/c_table.json")
     tableA = json.loads(fA.read())
     tableB = json.loads(fB.read())
     tableC = json.loads(fC.read())
