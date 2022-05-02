@@ -84,4 +84,28 @@ class Driver:
         self.is_forward = False
         self.is_backward = False
         self.is_stopped = True
+    
+    def turn90(self, dir, compass):
+        if not self.isInit:
+            self.setup()
+        
+        if dir == 'left':
+            left_lim = compass.get_heading[0] - 95
+            right_lim = compass.get_heading[0] - 85
+            if right_lim > 359: right_lim -= 360
+            if left_lim < 0: left_lim += 360
+            self.turnLeft()
+            while True:
+                if left_lim < compass.get_heading()[0] < right_lim: break
+            self.stop()
+        
+        elif dir == 'right':
+            left_lim = compass.get_heading[0] + 85
+            right_lim = compass.get_heading[0] + 95
+            if right_lim > 359: right_lim -= 360
+            if left_lim < 0: left_lim += 360
+            self.turnRight()
+            while True:
+                if left_lim < compass.get_heading()[0] < right_lim: break
+            self.stop()
 

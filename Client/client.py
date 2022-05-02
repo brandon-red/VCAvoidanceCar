@@ -1,6 +1,7 @@
 ################# IMPORTS #################
 import socket, json, time, os
 from turtle import left
+import turtle
 
 from numpy import tri
 from SensorReading.CompassLib.i2c_hmc5883l import HMC5883
@@ -222,11 +223,32 @@ if __name__ == "__main__":
             # insert navigation
 
         elif trig == 'drive':
-            # insert drive
-            pass
+            if dir == 'forward':
+                starttime = time.time()
+                totaltime = 0
+                endtime = amt
+                driver.forward()
+                while rangerF.getDist() > 30 or totaltime <= endtime:
+                    totaltime = time.time() - starttime
+                driver.stop()
+                if rangerF.getDist() < 30:
+                    # send packet "Obstacle detected cannot complete execution"
+                    pass
+                
+            elif dir == 'backward':
+                starttime = time.time()
+                totaltime = 0
+                endtime = amt
+                driver.backward()
+                while rangerB.getDist() > 30 or totaltime <= endtime:
+                    totaltime = time.time() - starttime
+                driver.stop()
+                if rangerB.getDist() < 30:
+                    # send packet "Obstacle detected cannot complete execution"
+                    pass
         elif trig == 'turn':
-            # insert turn
-            pass
+            driver.turn90(dir, compass)
+
     # Call get_command() -> opens json file updated by google home and adds commands to the queue if a new request was made
     # Pop command from queue and interpret the command
     
