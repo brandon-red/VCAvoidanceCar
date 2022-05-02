@@ -28,10 +28,10 @@ IN3 = 10 # GPIO pins for control of left motor
 IN4 = 9
 ADDRESS = "172.20.3.95" # Address and port number of UDP server
 PORT = 44444
-START_HEADING = (180, 190, 210)
-A_HEADING = (-1, 0, 0)
-B_HEADING = (0, -1, 0)
-C_HEADING = (0, 0, -1)
+START_HEADING = (8, 50, 99)
+A_HEADING = (8, 127, 151)
+B_HEADING = (353, 50, 206)
+C_HEADING = (13, 24, 90)
 CURRENT_LOC = 'start'
 #############################################
 
@@ -55,33 +55,37 @@ driver = Driver(rightMotor, leftMotor) # driver object
 
 def get_command():
     # Handles the commands received from Google API
-    dir = "/home/pi/VCAvoidanceCar/Client/data"
+    directory = "/home/pi/VCAvoidanceCar/Client/data"
     name = "request.json"
-    path = os.path.join(dir, name)
-    f = open(path, '+')
+    path = os.path.join(directory, name)
+    f = open(path, 'r')
     request = json.loads(f.read())
+    f.close()
     if request["valid"] == True:
         cmd = (request['trigger'].lower(), request['direction'].lower(), request['amount'])
         command_queue.append(cmd)
         request["valid"] = False
+        f = open(path, 'w')
         f.write(json.dumps(request))
+        f.close()
     else: return None
 
 def is_at_Location(location, signature):
     # Returns True if car is within threshold range of given location, False elsewise
-    if location == "A":
+    if location == "a":
         table = tableA
         common_keys = set(tableA.keys()) & set(signature.keys())
-    elif location == "B":
+    elif location == "b":
         table = tableB
         common_keys = set(tableB.keys()) & set(signature.keys())
-    elif location == "C":
+    elif location == "c":
         table = tableC
         common_keys = set(tableC.keys()) & set(signature.keys())
 
     dist = WifiTri.indoor_localization.subtract_all_signatures(table, signature, common_keys)
     norm = WifiTri.indoor_localization.l2norm(dist)
-    if(norm <= 5): return True
+    print(norm)
+    if(norm <= 100): return True
     else: return False
 
 def orient(current, destination):
@@ -93,25 +97,27 @@ def orient(current, destination):
     if current == 'start': 
         right_lim = START_HEADING[num] + 5
         left_lim = START_HEADING[num] - 5
-    elif current == 'A':
+    elif current == 'a':
         right_lim = A_HEADING[num] + 5
         left_lim = A_HEADING[num] - 5
-    elif current == 'B':
+    elif current == 'b':
         right_lim = B_HEADING[num] + 5
         left_lim = B_HEADING[num] - 5
-    elif current == 'C':
+    elif current == 'c':
         right_lim = C_HEADING[num] + 5
         left_lim = C_HEADING[num] - 5    
 
     if right_lim > 359: right_lim -= 360
     if left_lim < 0: left_lim += 360
+    driver.turnRight()
+    print(compass.get_heading()[0])
+    print(right_lim, left_lim)
     while True:
-        driver.turnRight()
+        compass_reading = compass.get_heading()[0]
         if left_lim < compass_reading < right_lim:
             driver.stop()
             break
-        driver.stop()
-        compass_reading = compass.get_heading()[0]
+        
     
 def avoidObstacle():
     # Get original direction
@@ -190,9 +196,9 @@ def system_init():
 
 if __name__ == "__main__":
 
-    fA = open("a_table.json")
-    fB = open("b_table.json")
-    fC = open("c_table.json")
+    fA = open("/home/pi/VCAvoidanceCar/Client/WifiTri/a_table.json")
+    fB = open("/home/pi/VCAvoidanceCar/Client/WifiTri/b_table.json")
+    fC = open("/home/pi/VCAvoidanceCar/Client/WifiTri/c_table.json")
     tableA = json.loads(fA.read())
     tableB = json.loads(fB.read())
     tableC = json.loads(fC.read())
@@ -209,26 +215,26 @@ if __name__ == "__main__":
         cmd = command_queue.pop(0) # pop first command in the queue
 
         trig = cmd[0]
-        dir = cmd[1]
+        direction = cmd[1]
         amt = cmd[2]
 
         if trig == 'go':
-            send_packet(PORT, ADDRESS, "Recieved Command\nStarting Navigation to Location {} from {}".format(dir, CURRENT_LOC))
-            orient(CURRENT_LOC, dir)
+            send_packet(PORT, ADDRESS, "Recieved Command\nStarting Navigation to Location {} from {}".format(direction, CURRENT_LOC))
+            orient(CURRENT_LOC, direction)
             signature = dict()
             arrived = False
             driver.forward()
             while arrived == False:
                 if rangerF.getDist() < 30: avoidObstacle()
                 signature = WifiTri.data_collect.do_scan(signature)
-                arrived = is_at_Location(dir, signature)
+                arrived = is_at_Location(direction, signature)
             driver.stop()
-            CURRENT_LOC = dir
+            CURRENT_LOC = direction
             continue
 
         elif trig == 'drive':
-            send_packet(PORT, ADDRESS, "Recieved Command\nBegin driving {} for {} seconds".format(dir, amt))
-            if dir == 'forward':
+            send_packet(PORT, ADDRESS, "Recieved Command\nBegin driving {} for {} seconds".format(direction, amt))
+            if direction == 'forward':
                 starttime = time.time()
                 totaltime = 0
                 endtime = amt
@@ -241,7 +247,7 @@ if __name__ == "__main__":
                     continue
                 
                 
-            elif dir == 'backward':
+            elif direction == 'backward':
                 starttime = time.time()
                 totaltime = 0
                 endtime = amt
@@ -255,8 +261,8 @@ if __name__ == "__main__":
             send_packet(PORT, ADDRESS, "Completed driving {} for {} seconds".format())
         
         elif trig == 'turn':
-            send_packet(PORT, ADDRESS, "Executing {} turn".format(dir))
-            driver.turn90(dir, compass)
-            send_packet(PORT, ADDRESS, "Turned {}, vehicle oriented facing {} degrees".format(dir, compass.get_heading()[0]))
+            send_packet(PORT, ADDRESS, "Executing {} turn".format(direction))
+            driver.turn90(direction, compass)
+            send_packet(PORT, ADDRESS, "Turned {}, vehicle oriented facing {} degrees".format(direction, compass.get_heading()[0]))
             continue
     
