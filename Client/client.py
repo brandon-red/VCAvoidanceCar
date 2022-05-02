@@ -55,9 +55,9 @@ driver = Driver(rightMotor, leftMotor) # driver object
 
 def get_command():
     # Handles the commands received from Google API
-    dir = "/home/pi/VCAvoidanceCar/Client/data"
+    directory = "/home/pi/VCAvoidanceCar/Client/data"
     name = "request.json"
-    path = os.path.join(dir, name)
+    path = os.path.join(directory, name)
     f = open(path, 'r')
     request = json.loads(f.read())
     f.close()
@@ -214,26 +214,26 @@ if __name__ == "__main__":
         cmd = command_queue.pop(0) # pop first command in the queue
 
         trig = cmd[0]
-        dir = cmd[1]
+        direction = cmd[1]
         amt = cmd[2]
 
         if trig == 'go':
-            send_packet(PORT, ADDRESS, "Recieved Command\nStarting Navigation to Location {} from {}".format(dir, CURRENT_LOC))
-            orient(CURRENT_LOC, dir)
+            send_packet(PORT, ADDRESS, "Recieved Command\nStarting Navigation to Location {} from {}".format(direction, CURRENT_LOC))
+            orient(CURRENT_LOC, direction)
             signature = dict()
             arrived = False
             driver.forward()
             while arrived == False:
                 if rangerF.getDist() < 30: avoidObstacle()
                 signature = WifiTri.data_collect.do_scan(signature)
-                arrived = is_at_Location(dir, signature)
+                arrived = is_at_Location(direction, signature)
             driver.stop()
-            CURRENT_LOC = dir
+            CURRENT_LOC = direction
             continue
 
         elif trig == 'drive':
-            send_packet(PORT, ADDRESS, "Recieved Command\nBegin driving {} for {} seconds".format(dir, amt))
-            if dir == 'forward':
+            send_packet(PORT, ADDRESS, "Recieved Command\nBegin driving {} for {} seconds".format(direction, amt))
+            if direction == 'forward':
                 starttime = time.time()
                 totaltime = 0
                 endtime = amt
@@ -246,7 +246,7 @@ if __name__ == "__main__":
                     continue
                 
                 
-            elif dir == 'backward':
+            elif direction == 'backward':
                 starttime = time.time()
                 totaltime = 0
                 endtime = amt
@@ -260,8 +260,8 @@ if __name__ == "__main__":
             send_packet(PORT, ADDRESS, "Completed driving {} for {} seconds".format())
         
         elif trig == 'turn':
-            send_packet(PORT, ADDRESS, "Executing {} turn".format(dir))
-            driver.turn90(dir, compass)
-            send_packet(PORT, ADDRESS, "Turned {}, vehicle oriented facing {} degrees".format(dir, compass.get_heading()[0]))
+            send_packet(PORT, ADDRESS, "Executing {} turn".format(direction))
+            driver.turn90(direction, compass)
+            send_packet(PORT, ADDRESS, "Turned {}, vehicle oriented facing {} degrees".format(direction, compass.get_heading()[0]))
             continue
     
