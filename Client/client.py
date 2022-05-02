@@ -72,13 +72,13 @@ def get_command():
 
 def is_at_Location(location, signature):
     # Returns True if car is within threshold range of given location, False elsewise
-    if location == "A":
+    if location == "a":
         table = tableA
         common_keys = set(tableA.keys()) & set(signature.keys())
-    elif location == "B":
+    elif location == "b":
         table = tableB
         common_keys = set(tableB.keys()) & set(signature.keys())
-    elif location == "C":
+    elif location == "c":
         table = tableC
         common_keys = set(tableC.keys()) & set(signature.keys())
 
@@ -97,13 +97,13 @@ def orient(current, destination):
     if current == 'start': 
         right_lim = START_HEADING[num] + 5
         left_lim = START_HEADING[num] - 5
-    elif current == 'A':
+    elif current == 'a':
         right_lim = A_HEADING[num] + 5
         left_lim = A_HEADING[num] - 5
-    elif current == 'B':
+    elif current == 'b':
         right_lim = B_HEADING[num] + 5
         left_lim = B_HEADING[num] - 5
-    elif current == 'C':
+    elif current == 'c':
         right_lim = C_HEADING[num] + 5
         left_lim = C_HEADING[num] - 5    
 
