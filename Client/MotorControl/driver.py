@@ -1,5 +1,6 @@
 from motor_controller import Motor
 from SensorReading.ranger import Ranger
+import time
 
 class Driver:
     def __init__(self, right, left):
@@ -52,13 +53,13 @@ class Driver:
         """
         sets right side to go backward 
         sets left side to go forward
-        turns the vehicle right 
+        turns the vehicle right 90 degrees
         """
         if not self.isInit:
             self.setup()
         self.right.backward()
         self.left.forward()    
-    
+        time.sleep(1)
     def turnLeft(self):
         """
         sets right side to go forward

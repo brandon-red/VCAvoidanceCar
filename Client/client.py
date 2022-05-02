@@ -1,5 +1,7 @@
 ################# IMPORTS #################
 import socket, json, time, os
+
+from numpy import tri
 from SensorReading.CompassLib.i2c_hmc5883l import HMC5883
 from SensorReading.infrared import Infrared
 from SensorReading.ranger import Ranger
@@ -58,7 +60,7 @@ def get_command():
     f = open(path, '+')
     request = json.loads(f.read())
     if request["valid"] == True:
-        cmd = (request['trigger'], request['direction'], request['amount'])
+        cmd = (request['trigger'].lower(), request['direction'].lower(), request['amount'])
         command_queue.append(cmd)
         request["valid"] = False
         f.write(json.dumps(request))
@@ -175,7 +177,11 @@ if __name__ == "__main__":
         if(len(command_queue) == 0): continue # no commands to execute
 
         cmd = command_queue.pop(0) # pop first command in the queue
-        ret = interpret_command(cmd) # Interpret what to do from the list of words
+        trigger = cmd[0]
+        direction = cmd[1]
+        amount = cmd[2]
+
+        if trigger == 'go':
 
     # Call get_command() -> opens json file updated by google home and adds commands to the queue if a new request was made
     # Pop command from queue and interpret the command
