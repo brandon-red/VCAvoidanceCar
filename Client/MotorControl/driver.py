@@ -1,4 +1,4 @@
-from motor_controller import Motor
+from . motor_controller import Motor
 from SensorReading.ranger import Ranger
 import time
 
