@@ -28,10 +28,10 @@ IN3 = 10 # GPIO pins for control of left motor
 IN4 = 9
 ADDRESS = "172.20.3.95" # Address and port number of UDP server
 PORT = 44444
-START_HEADING = (180, 190, 210)
-A_HEADING = (-1, 0, 0)
-B_HEADING = (0, -1, 0)
-C_HEADING = (0, 0, -1)
+START_HEADING = (8, 50, 99)
+A_HEADING = (8, 127, 151)
+B_HEADING = (353, 50, 206)
+C_HEADING = (13, 24, 90)
 CURRENT_LOC = 'start'
 #############################################
 
@@ -81,7 +81,8 @@ def is_at_Location(location, signature):
 
     dist = WifiTri.indoor_localization.subtract_all_signatures(table, signature, common_keys)
     norm = WifiTri.indoor_localization.l2norm(dist)
-    if(norm <= 5): return True
+    print(norm)
+    if(norm <= 100): return True
     else: return False
 
 def orient(current, destination):
