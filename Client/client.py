@@ -58,13 +58,16 @@ def get_command():
     dir = "/home/pi/VCAvoidanceCar/Client/data"
     name = "request.json"
     path = os.path.join(dir, name)
-    f = open(path, '+')
+    f = open(path, 'r')
     request = json.loads(f.read())
+    f.close()
     if request["valid"] == True:
         cmd = (request['trigger'].lower(), request['direction'].lower(), request['amount'])
         command_queue.append(cmd)
         request["valid"] = False
+        f = open(path, 'w')
         f.write(json.dumps(request))
+        f.close()
     else: return None
 
 def is_at_Location(location, signature):
