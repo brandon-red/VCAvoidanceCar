@@ -154,6 +154,24 @@ if __name__ == "__main__":
 
     system_init()
 
+    ################### Main Loop Structure ###################
+    #
+    # Get command + send to server "Recieved command: _______"
+    # Interpret command, gets trigger, , amount
+    # Execute command
+    # --> Go to Location ___ 
+    #   --> Send packet "Starting navigation to Location ___"
+    #   --> Start navigation, and if detect obstacle, run obstacleAvoidance()
+    #      --> Send packet "Obstacle Detected, starting Anti-Collision protocol"
+    #   --> After every scanning session, send packet "Navigation to Location __ in progress"
+    #   --> When arrived, send packet "Navigation to Location __ complete"
+    # --> Turning
+    #   --> Turn left or right 90 degrees
+    # --> Driving
+    #   --> Drive forward or backward x amount of seconds
+    #   --> If obstacle detected, send packet "Obstacle Detected, cannot proceed with given instructions"
+    #
+    #####################################################################################################
     while True:
         get_command()
         if(len(command_queue) == 0): continue # no commands to execute
