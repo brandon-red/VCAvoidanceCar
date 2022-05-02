@@ -1,10 +1,5 @@
 ################# IMPORTS #################
 import socket, json, time, os
-from tkinter import CURRENT
-from turtle import left
-import turtle
-
-from numpy import tri
 from SensorReading.CompassLib.i2c_hmc5883l import HMC5883
 from SensorReading.infrared import Infrared
 from SensorReading.ranger import Ranger
@@ -237,7 +232,7 @@ if __name__ == "__main__":
                 totaltime = 0
                 endtime = amt
                 driver.forward()
-                while rangerF.getDist() > 30 or totaltime <= endtime:
+                while rangerF.getDist() > 30 and totaltime <= endtime:
                     totaltime = time.time() - starttime
                 driver.stop()
                 if rangerF.getDist() < 30:
@@ -250,7 +245,7 @@ if __name__ == "__main__":
                 totaltime = 0
                 endtime = amt
                 driver.backward()
-                while rangerB.getDist() > 30 or totaltime <= endtime:
+                while rangerB.getDist() > 30 and totaltime <= endtime:
                     totaltime = time.time() - starttime
                 driver.stop()
                 if rangerB.getDist() < 30:
