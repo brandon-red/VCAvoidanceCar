@@ -153,9 +153,10 @@ def send_packet(port, ip, msg):
     """
     Send packet to server containing message
     """
+    msg = b''
     try:
-        sock = socket.socket()
-        sock.connect((ip, port))
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        sock.bind((ip, port))
         
         sock.send(msg.encode())
 

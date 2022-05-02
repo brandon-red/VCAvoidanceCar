@@ -8,27 +8,33 @@ parser.add_argument("-p", "--port", type=int, \
 args = parser.parse_args() 
 port = args.port # get the ip and port of the server
 
+
 try:
-    sock = socket.socket()
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.bind(('', port))
     sock.listen(10) 
     print("="*30)
     print("Sever listening on", port)
     print("="*30)
-
+    
+    msg = b''
+    address = ''
+    
     while True:
         connection, address = sock.accept()
         print("Message from", address)
-        message = connection.recv(1024).decode()
+        msg = connection.recv(1024).decode()
 
-        print(message)
+        print(msg)
 
-        msg = "acked"
-        connection.send(msg.encode())                              
+        tmsg = "acked"
+        connection.send(tmsg.encode())                             
+        connection.close()
 
 except ConnectionRefusedError:
     print("Connection refused. Server program not running.")
 finally:
     print("Socket released")
+    socket.close()
 
 
