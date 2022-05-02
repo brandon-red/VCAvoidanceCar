@@ -28,7 +28,9 @@ try:
         infrared = packet['IR']
         compass = packet['compass']
         range = packet['ranger']
-
+        message = packet['message']
+        
+        print(message)
         print("New sensor update received")
         print("Front Ranger measurement:", range[0])
         print("Back Ranger measurement:", range[1])

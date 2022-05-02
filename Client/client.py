@@ -86,19 +86,22 @@ def is_at_Location(location, signature):
 def avoidObstacle():
     pass
 
-def send_packet(port, ip):
+def send_packet(port, ip, msg):
     """
-    called every ~20ms
+    called every ~20ms (maybe send only before during and after commands)
+    or every 3 seconds if not navigating 
     """
     try:
         print("Trying to connect to %s:%d" % (ip, port))
         sock = socket.socket()
         sock.connect((ip, port))
         
+        # Sensor information and custom message being sent
         packet = getSensors()
-
+        packet['message'] = msg
         packet_json = json.dumps(packet)
         sock.send(packet_json.encode())
+
 
         ack = sock.recv(1024).decode()
         print("Server ACKed packet")
@@ -114,7 +117,8 @@ def send_packet(port, ip):
 def system_init():
     GPIO.setmode(GPIO.BCM) # Set GPIO numbering scheme to Broadcom
     GPIO.setwarnings(False) # Disable GPIO warnings
-    #setup all sensors and motors
+    
+    # Setup all sensors and motors
     rangerF.setup()
     rangerB.setup()
     rangerR.setup()
