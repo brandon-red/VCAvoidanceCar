@@ -10,7 +10,7 @@ def prime():
     content = request.get_json() #JSON
     if content["amount"] == "None": content["amount"] = None
     content["valid"] = True
-    content["direction"] = content["direction"].strip()
+    content["direction"] = content["direction"].strip().upper()
     dir = "/home/pi/VCAvoidanceCar/Client/data"
     name = "request.json"
     path = os.path.join(dir, name)
