@@ -1,14 +1,12 @@
 ################# IMPORTS #################
-import socket
-import json
-import time
-from Client.WifiTri.indoor_localization import NUM_LOCATIONS
+import socket, json, time, os
 from SensorReading.CompassLib.i2c_hmc5883l import HMC5883
 from SensorReading.infrared import Infrared
 from SensorReading.ranger import Ranger
 from MotorControl.motor_controller import Motor
 from MotorControl.driver import Driver
 import WifiTri.indoor_localization
+import WifiTri.data_collect
 import RPi.GPIO as GPIO
 ###########################################
 
@@ -54,17 +52,17 @@ driver = Driver(rightMotor, leftMotor) # driver object
 
 def get_command():
     # Handles the commands received from Google API
-    f = open("data/requests.json")
+    dir = "/home/pi/VCAvoidanceCar/Client/data"
+    name = "request.json"
+    path = os.path.join(dir, name)
+    f = open(path, '+')
     request = json.loads(f.read())
-    if request["Valid"] == "True":
-        command_queue.append(request["words"])
-        request["Valid"] = "False"
+    if request["valid"] == True:
+        cmd = (request['trigger'], request['direction'], request['amount'])
+        command_queue.append(cmd)
+        request["valid"] = False
         f.write(json.dumps(request))
     else: return None
-
-def interpret_command():
-
-    pass
 
 def is_at_Location(location, signature):
     # Returns True if car is within threshold range of given location, False elsewise
