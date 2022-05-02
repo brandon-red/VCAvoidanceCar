@@ -86,6 +86,9 @@ class Driver:
         self.is_stopped = True
     
     def turn90(self, dir, compass):
+        """
+        Turn vehicle 90 degrees
+        """
         if not self.isInit:
             self.setup()
         

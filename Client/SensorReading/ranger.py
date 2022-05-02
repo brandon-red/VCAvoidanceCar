@@ -1,7 +1,7 @@
 ######################################################################################
-                # Raspberry Pi source code for sensing ultrasonic ranger #
+            # Raspberry Pi source code for reading from ultrasonic ranger #
 # Should be structured as a function that can be called from main and other processes #
-                # Look at encoder.py as a template example #
+                    # Look at encoder.py as a template example #
 ######################################################################################
 
 import RPi.GPIO as GPIO

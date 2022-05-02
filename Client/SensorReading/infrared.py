@@ -1,6 +1,6 @@
 ######################################################################################
-                # Raspberry Pi source code for sensing infrared #
-# Structured as a function that can be called from main and other processes #
+        # Raspberry Pi source code for reading from an Infrared Sensor #
+    # Structured as a function that can be called from main and other processes #
 ######################################################################################
 
 import RPi.GPIO as GPIO

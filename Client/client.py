@@ -1,5 +1,6 @@
 ################# IMPORTS #################
 import socket, json, time, os
+from tkinter import CURRENT
 from turtle import left
 import turtle
 
@@ -30,12 +31,12 @@ IN1 = 16 # GPIO pins for control of right motor
 IN2 = 20
 IN3 = 10 # GPIO pins for control of left motor
 IN4 = 9
-ADDRESS = "127.0.0.1" # Address and port number of UDP server
+ADDRESS = "172.20.3.95" # Address and port number of UDP server
 PORT = 44444
 START_HEADING = (180, 190, 210)
-A_HEADING = (A, B, C)
-B_HEADING = (A, B, C)
-C_HEADING = (A, B, C)
+A_HEADING = (-1, 0, 0)
+B_HEADING = (0, -1, 0)
+C_HEADING = (0, 0, -1)
 CURRENT_LOC = 'start'
 #############################################
 
@@ -56,8 +57,6 @@ rightMotor = Motor(IN2, IN1) # Right motor object
 leftMotor = Motor(IN3, IN4) # Left motor object
 driver = Driver(rightMotor, leftMotor) # driver object
 ####################################################
-
-
 
 def get_command():
     # Handles the commands received from Google API
@@ -120,24 +119,50 @@ def orient(current, destination):
         compass_reading = compass.get_heading()[0]
     
 def avoidObstacle():
-    pass
+    # Get original direction
+    originalDir = driver.getMovement()
+    driver.stop()
+    # Determine best way to turn based on side sensors
+    turnDir = rangerL.isMax(rangerR)
+    originalTurn = 'right' # default case 
+    # Left turn case
+    if turnDir:
+        originalTurn = 'left'
+        driver.turnLeft()
+        if originalDir == 'forward':
+            while rangerR.getDist() < 50:
+                driver.forward()
+        else:
+            while rangerL.getDist() < 50:
+                driver.forward()
+    # Right turn case
+    else:
+        driver.turnRight()
+        if originalDir == 'forward':
+            while rangerL.getDist() < 50:
+                driver.forward()
+        else:
+            while rangerR.getDist() < 50:
+                driver.forward()
+    # After obstacle not visible, turn to original direction             
+    if originalTurn == 'right':
+        driver.turnLeft()
+    else:
+        driver.turnRight()
+    if originalDir == 'forward':
+        driver.forward()
+    else:
+        driver.backward()
 
 def send_packet(port, ip, msg):
     """
-    called every ~20ms (maybe send only before during and after commands)
-    or every 3 seconds if not navigating 
+    Send packet to server containing message
     """
     try:
-        print("Trying to connect to %s:%d" % (ip, port))
         sock = socket.socket()
         sock.connect((ip, port))
         
-        # Sensor information and custom message being sent
-        packet = getSensors()
-        packet['message'] = msg
-        packet_json = json.dumps(packet)
-        sock.send(packet_json.encode())
-
+        sock.send(msg.encode())
 
         ack = sock.recv(1024).decode()
         print("Server ACKed packet")
@@ -167,15 +192,6 @@ def system_init():
     driver.setup()
     return
 
-def getSensors():
-    readings = {
-            'IR': [infraredF.getProximity(), infraredF.getProximity()],
-            'compass': compass.get_heading(),
-            'ranger': [rangerF.getDist(), rangerB.getDist(), rangerR.getDist(), rangerL.getDist()]
-        }
-    return readings
-
-
 if __name__ == "__main__":
 
     fA = open("a_table.json")
@@ -190,24 +206,6 @@ if __name__ == "__main__":
 
     system_init()
 
-    ################### Main Loop Structure ###################
-    #
-    # Get command + send to server "Recieved command: _______"
-    # Interpret command, gets trigger, , amount
-    # Execute command
-    # --> Go to Location ___ 
-    #   --> Send packet "Starting navigation to Location ___"
-    #   --> Start navigation, and if detect obstacle, run obstacleAvoidance()
-    #      --> Send packet "Obstacle Detected, starting Anti-Collision protocol"
-    #   --> After every scanning session, send packet "Navigation to Location __ in progress"
-    #   --> When arrived, send packet "Navigation to Location __ complete"
-    # --> Turning
-    #   --> Turn left or right 90 degrees
-    # --> Driving
-    #   --> Drive forward or backward x amount of seconds
-    #   --> If obstacle detected, send packet "Obstacle Detected, cannot proceed with given instructions"
-    #
-    #####################################################################################################
     while True:
         get_command()
         if(len(command_queue) == 0): continue # no commands to execute
@@ -219,19 +217,21 @@ if __name__ == "__main__":
         amt = cmd[2]
 
         if trig == 'go':
+            send_packet(PORT, ADDRESS, "Recieved Command\nStarting Navigation to Location {} from {}".format(dir, CURRENT_LOC))
             orient(CURRENT_LOC, dir)
             signature = dict()
             arrived = False
             driver.forward()
             while arrived == False:
-                #if rangerF.getDist() < 30: avoidObstacle()
+                if rangerF.getDist() < 30: avoidObstacle()
                 signature = WifiTri.data_collect.do_scan(signature)
                 arrived = is_at_Location(dir, signature)
             driver.stop()
-
-            # insert navigation
+            CURRENT_LOC = dir
+            continue
 
         elif trig == 'drive':
+            send_packet(PORT, ADDRESS, "Recieved Command\nBegin driving {} for {} seconds".format(dir, amt))
             if dir == 'forward':
                 starttime = time.time()
                 totaltime = 0
@@ -241,8 +241,9 @@ if __name__ == "__main__":
                     totaltime = time.time() - starttime
                 driver.stop()
                 if rangerF.getDist() < 30:
-                    # send packet "Obstacle detected cannot complete execution"
-                    pass
+                    send_packet(PORT, ADDRESS, "Obstacle Detected {:.1f} cm away, stopping movement".format())
+                    continue
+                
                 
             elif dir == 'backward':
                 starttime = time.time()
@@ -253,19 +254,13 @@ if __name__ == "__main__":
                     totaltime = time.time() - starttime
                 driver.stop()
                 if rangerB.getDist() < 30:
-                    # send packet "Obstacle detected cannot complete execution"
-                    pass
+                    send_packet(PORT, ADDRESS, "Obstacle Detected {:.1f} cm away, stopping movement".format())
+                    continue
+            send_packet(PORT, ADDRESS, "Completed driving {} for {} seconds".format())
+        
         elif trig == 'turn':
+            send_packet(PORT, ADDRESS, "Executing {} turn".format(dir))
             driver.turn90(dir, compass)
-
-    # Call get_command() -> opens json file updated by google home and adds commands to the queue if a new request was made
-    # Pop command from queue and interpret the command
+            send_packet(PORT, ADDRESS, "Turned {}, vehicle oriented facing {} degrees".format(dir, compass.get_heading()[0]))
+            continue
     
-    # compass.get_heading() used to get the measurement of compass it returns a tuple (degrees, minutes)
-
-    
-    
-
-    # Main Loop
-
-
