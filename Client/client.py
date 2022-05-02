@@ -218,7 +218,16 @@ if __name__ == "__main__":
         amt = cmd[2]
 
         if trig == 'go':
-            orient()
+            orient(CURRENT_LOC, dir)
+            signature = dict()
+            arrived = False
+            driver.forward()
+            while arrived == False:
+                #if rangerF.getDist() < 30: avoidObstacle()
+                signature = WifiTri.data_collect.do_scan(signature)
+                arrived = is_at_Location(dir, signature)
+            driver.stop()
+
             # insert navigation
 
         elif trig == 'drive':
