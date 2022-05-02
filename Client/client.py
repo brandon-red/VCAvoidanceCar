@@ -1,5 +1,6 @@
 ################# IMPORTS #################
 import socket, json, time, os
+from turtle import left
 
 from numpy import tri
 from SensorReading.CompassLib.i2c_hmc5883l import HMC5883
@@ -30,6 +31,11 @@ IN3 = 10 # GPIO pins for control of left motor
 IN4 = 9
 ADDRESS = "127.0.0.1" # Address and port number of UDP server
 PORT = 44444
+START_HEADING = (180, 190, 210)
+A_HEADING = (A, B, C)
+B_HEADING = (A, B, C)
+C_HEADING = (A, B, C)
+CURRENT_LOC = 'start'
 #############################################
 
 
@@ -83,6 +89,35 @@ def is_at_Location(location, signature):
     if(norm <= 5): return True
     else: return False
 
+def orient(current, destination):
+    num = 0 # default case
+    if destination == 'A': num = 0  
+    elif destination == 'B': num = 1
+    elif destination == 'C': num = 2
+    
+    if current == 'start': 
+        right_lim = START_HEADING[num] + 5
+        left_lim = START_HEADING[num] - 5
+    elif current == 'A':
+        right_lim = A_HEADING[num] + 5
+        left_lim = A_HEADING[num] - 5
+    elif current == 'B':
+        right_lim = B_HEADING[num] + 5
+        left_lim = B_HEADING[num] - 5
+    elif current == 'C':
+        right_lim = C_HEADING[num] + 5
+        left_lim = C_HEADING[num] - 5    
+
+    if right_lim > 359: right_lim -= 360
+    if left_lim < 0: left_lim += 360
+    while True:
+        driver.turnRight()
+        if left_lim < compass_reading < right_lim:
+            driver.stop()
+            break
+        driver.stop()
+        compass_reading = compass.get_heading()[0]
+    
 def avoidObstacle():
     pass
 
@@ -177,12 +212,21 @@ if __name__ == "__main__":
         if(len(command_queue) == 0): continue # no commands to execute
 
         cmd = command_queue.pop(0) # pop first command in the queue
-        trigger = cmd[0]
-        direction = cmd[1]
-        amount = cmd[2]
 
-        if trigger == 'go':
+        trig = cmd[0]
+        dir = cmd[1]
+        amt = cmd[2]
 
+        if trig == 'go':
+            orient()
+            # insert navigation
+
+        elif trig == 'drive':
+            # insert drive
+            pass
+        elif trig == 'turn':
+            # insert turn
+            pass
     # Call get_command() -> opens json file updated by google home and adds commands to the queue if a new request was made
     # Pop command from queue and interpret the command
     

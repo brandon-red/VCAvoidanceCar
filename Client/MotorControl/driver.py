@@ -53,13 +53,13 @@ class Driver:
         """
         sets right side to go backward 
         sets left side to go forward
-        turns the vehicle right 90 degrees
+        turns the vehicle right
         """
         if not self.isInit:
             self.setup()
         self.right.backward()
         self.left.forward()    
-        time.sleep(1)
+
     def turnLeft(self):
         """
         sets right side to go forward
