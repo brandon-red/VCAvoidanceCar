@@ -109,13 +109,15 @@ def orient(current, destination):
 
     if right_lim > 359: right_lim -= 360
     if left_lim < 0: left_lim += 360
+    driver.turnRight()
+    print(compass.get_heading()[0])
+    print(right_lim, left_lim)
     while True:
-        driver.turnRight()
+        compass_reading = compass.get_heading()[0]
         if left_lim < compass_reading < right_lim:
             driver.stop()
             break
-        driver.stop()
-        compass_reading = compass.get_heading()[0]
+        
     
 def avoidObstacle():
     # Get original direction
