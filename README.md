@@ -26,9 +26,18 @@ Project Structure
     
 Hardware Set Up
 ---------------
-
-Software Dependencies
----------------------
+- Raspberry Pi 
+- 4x Ultrasonic Ranger Sensor
+- 2x Infrared Sensor
+- 1x Electronic Compass
+- Google Home Mini
+- Computer to run server
 
 How to Run
 ----------
+- Set up server on computer listening on port of choice
+- Start client by running `python client.py`
+- Speak commands to Google Home Mini in one of 3 ways:
+    - "Go to Location (A, B, C)" 
+    - "Drive (forward, backward) for # seconds"
+    - "Turn (right, left)
