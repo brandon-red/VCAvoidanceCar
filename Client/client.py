@@ -54,7 +54,16 @@ driver = Driver(rightMotor, leftMotor) # driver object
 ####################################################
 
 def get_command():
-    # Handles the commands received from Google API
+    '''
+    Checks for commmands sent from Google Home Mini
+    Every time Google Home receives a request it writes a JSON file containing the details of the request.
+    The JSON sits in /Client/data/request.json
+
+    This function simply opens request.json, verifies that the valid field is set to true (which means the request is fresh),
+    create a tuple containing the request's details and append it to the command queue.
+    Finally, write False to the valid field of the request and write it back to request.json
+    The last step is very important because main will know that the request is old and therefore must not be executed
+    '''
     directory = "/home/pi/VCAvoidanceCar/Client/data"
     name = "request.json"
     path = os.path.join(directory, name)
@@ -71,6 +80,12 @@ def get_command():
     else: return None
 
 def is_at_Location(location, signature):
+    '''
+    Used to know if a car is within threshold range of given location
+    Takes in two parameters: the goal destination which the car is navigating to and an RSSI signature scan taken in the moment
+    Then it simply compares signature with fingerprint tables of other known locations.
+    Finally it returns True if the car is within certain range of desired location, returns false otherwise
+    '''
     # Returns True if car is within threshold range of given location, False elsewise
     if location == "a":
         table = tableA
@@ -89,10 +104,18 @@ def is_at_Location(location, signature):
     else: return False
 
 def orient(current, destination):
+    '''
+    Orients the car in the direction of a desired destination.
+    It takes two parameters: current known location of the car, and the desired destination
+
+    To achieve a correct orientation, this function uses the electronic compass. We know the fixed orientation of all known locations.
+    Simply make the car turn until it is oriented in the destination that we are interested in going to
+    The orientation will be correct with a +/- 5 degree error margin. 5 degree is acceptable since the location have an acceptable range of 3 meters
+    '''
     num = 0 # default case
-    if destination == 'A': num = 0  
-    elif destination == 'B': num = 1
-    elif destination == 'C': num = 2
+    if destination == 'a': num = 0  
+    elif destination == 'b': num = 1
+    elif destination == 'c': num = 2
     
     if current == 'start': 
         right_lim = START_HEADING[num] + 5
@@ -120,6 +143,9 @@ def orient(current, destination):
         
     
 def avoidObstacle():
+    '''
+    Obstacle avoidance algorithm used in cases where the car encounters an object in the way
+    '''
     # Get original direction
     originalDir = driver.getMovement()
     driver.stop()
@@ -178,6 +204,9 @@ def send_packet(port, ip, msg):
         return True
 
 def system_init():
+    '''
+    Initializes all sensors and motors used in the system. The setup functions can be found in the respective classes
+    '''
     GPIO.setmode(GPIO.BCM) # Set GPIO numbering scheme to Broadcom
     GPIO.setwarnings(False) # Disable GPIO warnings
     

@@ -22,7 +22,7 @@ try:
     
     while True:
         connection, address = sock.accept()
-        print("Message from", address)
+        print("Message from {}".format(address))
         msg = connection.recv(1024).decode()
 
         print(msg)
