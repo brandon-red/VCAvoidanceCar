@@ -1,6 +1,6 @@
 {
     "trigger": "go",
     "direction": "",
-    "amount": None,
-    "valid": True
+    "amount": null,
+    "valid": true
 }

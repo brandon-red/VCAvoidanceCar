@@ -247,6 +247,7 @@ if __name__ == "__main__":
         direction = cmd[1]
         amt = cmd[2]
 
+        # go to location command inputted
         if trig == 'go':
             send_packet(PORT, ADDRESS, "Recieved Command\nStarting Navigation to Location {} from {}".format(direction, CURRENT_LOC))
             orient(CURRENT_LOC, direction)
@@ -260,7 +261,7 @@ if __name__ == "__main__":
             driver.stop()
             CURRENT_LOC = direction
             continue
-
+        # drive command inputted
         elif trig == 'drive':
             send_packet(PORT, ADDRESS, "Recieved Command\nBegin driving {} for {} seconds".format(direction, amt))
             if direction == 'forward':
@@ -289,9 +290,19 @@ if __name__ == "__main__":
                     continue
             send_packet(PORT, ADDRESS, "Completed driving {} for {} seconds".format())
         
+        # turn command inputted
         elif trig == 'turn':
             send_packet(PORT, ADDRESS, "Executing {} turn".format(direction))
-            driver.turn90(direction, compass)
+            if direction == 'right':
+                driver.turnRight()
+                time.sleep(0.25)
+                driver.stop()
+                continue
+            elif direction == 'left':
+                driver.turnLeft()
+                time.sleep(0.25)
+                driver.stop()
+                continue
             send_packet(PORT, ADDRESS, "Turned {}, vehicle oriented facing {} degrees".format(direction, compass.get_heading()[0]))
             continue
     
