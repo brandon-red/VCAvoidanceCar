@@ -155,7 +155,7 @@ def avoidObstacle():
     else:
         driver.backward()
 
-def send_packet(port, ip, msg):
+def send_packet(port, ip, mesg):
     """
     Send packet to server containing message
     """
@@ -163,8 +163,8 @@ def send_packet(port, ip, msg):
     try:
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         sock.bind((ip, port))
-        
-        sock.send(msg.encode())
+        msg = mesg.encode() 
+        sock.send(msg)
 
         ack = sock.recv(1024).decode()
         print("Server ACKed packet")

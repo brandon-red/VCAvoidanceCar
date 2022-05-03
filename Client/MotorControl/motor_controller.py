@@ -5,6 +5,7 @@
 ######################################################################################
 
 import RPi.GPIO as GPIO
+from gpiozero import PWMOutputDevice
 import time
 
 LOW = GPIO.LOW
@@ -22,6 +23,8 @@ class Motor:
         GPIO.setmode(GPIO.BCM)
         GPIO.output(self.IN1, LOW)
         GPIO.output(self.IN2, LOW)
+        pwm = PWMOutputDevice(self.EN, True, 0.25, 100)
+        pwm.on()
         self.isInit = True
     
     def forward(self):
